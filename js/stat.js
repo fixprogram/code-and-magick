@@ -1,82 +1,62 @@
-'use strict';
+(function() {
+  'use strict';
 
-var CLOUD_WIDTH = 420;
-var CLOUD_HEIGHT = 270;
-var CLOUD_X = 100;
-var CLOUD_Y = 10;
-var GAP = 10;
-var BAR_GAP = 50;
-var FONT_GAP = 16;
-var BAR_HEIGHT = 150;
-var BAR_WIDTH = 40;
-var SPACES_HEIGHTS = CLOUD_HEIGHT - ((FONT_GAP + GAP) + BAR_HEIGHT);
+  const cloudWidth = 420;
+  const cloudHeight = 270;
+  const gap = 10;
+  const cloudX = 100;
+  const cloudY = 10;
+  const barWidth = 40;
+  const barHeight = -130;
+  const barGap = 50;
+  const barY = 250;
+  let barX = 160;
 
-var renderCloud = function (ctx, x, y, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
-};
+  let renderClouds = function(ctx, width, height, x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  };
 
-var getMaxElement = function (arr) {
-  var maxElement = '' + Math.round(arr[0]);
-
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] > maxElement) {
-      maxElement = '' + Math.round(arr[i]);
-    }
-    arr[i] = '' + Math.round(arr[i]);
-  }
-  return maxElement;
-};
-
-var sortYourself = function (arr) {
-  for (var i = 0; i <= arr.length - 1; i++) {
-    if (arr[i] === 'Вы') {
-      var swap = arr[0];
-      arr[0] = arr[i];
-      arr[i] = swap;
-    }
-  }
-};
-
-window.renderStatistics = function (ctx, players, times) {
-  renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, 0.7)');
-  renderCloud(ctx, CLOUD_X, CLOUD_Y, '#fff');
-  ctx.strokeStyle = 'hsla(230, 86%, 48%, 1)';
-  ctx.strokeRect(CLOUD_X, CLOUD_Y, CLOUD_WIDTH, CLOUD_HEIGHT);
-
-  var maxTime = getMaxElement(times);
-  sortYourself(players);
-
-  if ((players.length - times.length !== 0) && (players.length - times.length >= 0)) {
-    times.push('0');
-  } else if (times.length - players.length !== 0) {
-    players.push('???');
-  }
-
-  ctx.fillStyle = '#000';
-  ctx.font = 'bold 16px PT Mono';
-  var title = 'Ура вы победили!\nСписок результатов:';
-  var titleArrow = title.split('\n');
-  for (var j = 0; j < titleArrow.length; j++) {
-    ctx.fillText(titleArrow[j], CLOUD_X + 20, CLOUD_Y + 30 + (GAP * 2) * j);
-  }
-
-  for (var i = 0; i < players.length; i++) {
-    ctx.fillStyle = '#000';
-    ctx.font = 'bold 16px PT Mono';
-    ctx.textBaseline = 'hanging';
-    ctx.fillText(players[i], CLOUD_X + BAR_GAP + (BAR_WIDTH + BAR_GAP) * i, CLOUD_HEIGHT - FONT_GAP);
-    if (players[i] === 'Вы') {
+  let renderBar = function(ctx, x, y, name, time, max) {
+    let barNameY = 260;
+    let barTimeY = barNameY - Math.abs(barHeight * (time / max) - 30);
+    ctx.fillStyle = 'black';
+    ctx.fillText(Math.floor(time), x, barTimeY);
+    ctx.fillText(name, x, barNameY);
+    if(name === 'Вы') {
       ctx.fillStyle = 'rgba(255, 0, 0, 1)';
     } else {
-      var random = '' + (1 - Math.random());
-      ctx.fillStyle = 'hsla(230, 86%, 48%,' + random + ')';
+      ctx.fillStyle = 'rgba(0,0,255,' + Math.random() +')';
     }
-    ctx.fillRect(CLOUD_X + BAR_GAP + (BAR_WIDTH + BAR_GAP) * i, SPACES_HEIGHTS + (BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime), BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
+    ctx.fillRect(x, y, barWidth, barHeight * (time / max));
+  };
 
-    ctx.fillStyle = '#000';
-    ctx.font = 'bold 16px PT Mono';
-    ctx.fillText(times[i], CLOUD_X + BAR_GAP + (BAR_WIDTH + BAR_GAP) * i, SPACES_HEIGHTS - FONT_GAP + (BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime));
-  }
+  let getMax = function(arr) {
+    let max = arr[0];
+    for(let i = 1; i < arr.length; i++) {
+      if(max < arr[i]) {
+        max = arr[i];
+      }
+    }
+    return Math.floor(max);
+  };
 
-};
+  window.renderStatistics = function(ctx, names, times) {
+
+    renderClouds(ctx, cloudWidth, cloudHeight, cloudX + gap, cloudY + gap, 'rgba(0,0,0,0.7');
+    renderClouds(ctx, cloudWidth, cloudHeight, cloudX, cloudY, 'white');
+
+    ctx.font = '16px PT Mono';
+    ctx.fillStyle = 'black';
+    ctx.textBaseline = 'hanging';
+    ctx.fillText('Ура, вы победили!', 160, 40);
+    ctx.fillText('Список результатов: ', 160, 60);
+
+    let max = getMax(times);
+
+    for(let i = 0; i < names.length; i++) {
+      renderBar(ctx, barX, barY, names[i], times[i], max);
+      barX += barGap + barWidth;
+    }
+  };
+})();
