@@ -3,9 +3,11 @@
 
   const ESC_CODE = 27;
   const ENT_CODE = 13;
+  const setupStartX = 50 + '%';
+  const setupStartY = 80 + 'px';
   const data = {
-    wizardNames: ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
-    wizardLastNames: ['даМарья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
+    // wizardNames: ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
+    // wizardLastNames: ['даМарья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
     wizardCoat: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
     wizardEyes: ['black', 'red', 'blue', 'yellow', 'green']
   };
@@ -13,56 +15,26 @@
   let setup = document.querySelector('.setup');
   let setupOpen = document.querySelector('.setup-open');
   let setupClose = document.querySelector('.setup-close');
-  let setupSimilar = document.querySelector('.setup-similar');
-  let similarWizards = [];
-  let similarWizard = {};
+  // let similarWizards = [];
+  // let similarWizard = {};
 
-  let getRandomNum = function(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-  };
+  // let createWizard = function(count, data) {
+  //   for(let i = 0; i < count; i++) {
+  //     similarWizard = {
+  //       name: data.wizardNames[getRandomNum(0, data.wizardNames.length)] + ' ' + data.wizardLastNames[getRandomNum(0, data.wizardLastNames.length)],
+  //       coatColor: data.wizardCoat[getRandomNum(0, data.wizardCoat.length)],
+  //       eyesColor: data.wizardEyes[getRandomNum(0, data.wizardEyes.length)],
+  //     };
+  //     similarWizards.push(similarWizard);
+  //   }
+  // };
 
-  let createWizard = function(count, data) {
-    for(let i = 0; i < count; i++) {
-      similarWizard = {
-        name: data.wizardNames[getRandomNum(0, data.wizardNames.length)] + ' ' + data.wizardLastNames[getRandomNum(0, data.wizardLastNames.length)],
-        coatColor: data.wizardCoat[getRandomNum(0, data.wizardCoat.length)],
-        eyesColor: data.wizardEyes[getRandomNum(0, data.wizardEyes.length)],
-      };
-      similarWizards.push(similarWizard);
-    }
-  };
-
-  createWizard(4, data);
-  console.log(similarWizards);
-
-  let similarWizardsList = document.querySelector('.setup-similar-list');
-  let similarWizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
-
-  let createWizardItem = function(wizard) {
-    let similarWizardItem = similarWizardTemplate.cloneNode(true);
-
-    similarWizardItem.querySelector('.setup-similar-label').textContent = wizard.name;
-    similarWizardItem.querySelector('.wizard-coat').style.fill = wizard.coatColor;
-    similarWizardItem.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
-
-    return similarWizardItem;
-  };
-
-  let fragment = document.createDocumentFragment();
-
-  for(let i = 0; i < similarWizards.length; i++) {
-    fragment.appendChild(createWizardItem(similarWizards[i]));
-  }
-
-  similarWizardsList.appendChild(fragment);
-
-  setupSimilar.classList.remove('hidden');
-
-
+  // createWizard(4, data);
+  // console.log(similarWizards);
 
   let isEscCode = function(evt) {
     if(evt.keyCode === ESC_CODE) {
-      setup.classList.add('hidden');
+      closePopup();
     }
   };
 
@@ -74,6 +46,8 @@
 
   let closePopup = function() {
     setup.classList.add('hidden');
+    setup.style.left = setupStartX;
+    setup.style.top = setupStartY;
     document.removeEventListener('keydown', isEscCode);
   };
 
@@ -124,42 +98,18 @@
   let setupForm = document.querySelector('.setup-wizard-form');
   let setupSubmit = document.querySelector('.setup-submit');
 
-  setupSubmit.addEventListener('click', function(){
-    setupForm.submit();
+  setupSubmit.addEventListener('click', function(evt){
+    window.backend.save(function(response){
+      setup.classList.add('hidden');
+      console.log(response);
+    }, window.onError, new FormData(setupForm));
+    evt.preventDefault();
   });
 
   setupSubmit.addEventListener('keydown', function(evt){
     if(evt.keyCode === ENT_CODE) {
       setupForm.submit();
     }
-  });
-
-  const setupFireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
-
-  let inputCoatColor = document.querySelector('.coat-color');
-  let inputEyesColor = document.querySelector('.eyes-color');
-  let inputFireballColor = document.querySelector('.fireball-color');
-
-  let wizardCoat = document.querySelector('.wizard-coat');
-  let wizardEyes = document.querySelector('.wizard-eyes');
-  let wizardFireball = document.querySelector('.setup-fireball-wrap');
-
-  wizardEyes.addEventListener('click', function() {
-    let color = data.wizardEyes[getRandomNum(0, data.wizardEyes.length)];
-    wizardEyes.style.fill = color;
-    inputEyesColor.value = color;
-  });
-
-  wizardCoat.addEventListener('click', function() {
-    let color = data.wizardCoat[getRandomNum(0, data.wizardCoat.length)];
-    wizardCoat.style.fill = color;
-    inputCoatColor.value = color;
-  });
-
-  wizardFireball.addEventListener('click', function() {
-    let color = setupFireballColors[getRandomNum(0, setupFireballColors.length)];
-    wizardFireball.style.background = color;
-    inputFireballColor.value = color;
   });
 
 })();
