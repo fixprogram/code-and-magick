@@ -66,5 +66,5 @@
     document.body.insertAdjacentElement('afterbegin', node);
   };
 
-  window.backend.load(onSuccess, onError);
+  window.backend.load(onSuccess, window.onError);
 })();

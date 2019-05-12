@@ -1,39 +1,20 @@
 (function() {
   "use strict";
 
-  const ESC_CODE = 27;
-  const ENT_CODE = 13;
-  const setupStartX = 50 + '%';
-  const setupStartY = 80 + 'px';
-  const data = {
-    // wizardNames: ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
-    // wizardLastNames: ['даМарья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
-    wizardCoat: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
-    wizardEyes: ['black', 'red', 'blue', 'yellow', 'green']
+  const Code = {
+    ESC: 27,
+    ENTER: 13
   };
 
   let setup = document.querySelector('.setup');
   let setupOpen = document.querySelector('.setup-open');
   let setupClose = document.querySelector('.setup-close');
-  // let similarWizards = [];
-  // let similarWizard = {};
 
-  // let createWizard = function(count, data) {
-  //   for(let i = 0; i < count; i++) {
-  //     similarWizard = {
-  //       name: data.wizardNames[getRandomNum(0, data.wizardNames.length)] + ' ' + data.wizardLastNames[getRandomNum(0, data.wizardLastNames.length)],
-  //       coatColor: data.wizardCoat[getRandomNum(0, data.wizardCoat.length)],
-  //       eyesColor: data.wizardEyes[getRandomNum(0, data.wizardEyes.length)],
-  //     };
-  //     similarWizards.push(similarWizard);
-  //   }
-  // };
-
-  // createWizard(4, data);
-  // console.log(similarWizards);
+  const setupStartX = setup.style.left;
+  const setupStartY = setup.style.top;
 
   let isEscCode = function(evt) {
-    if(evt.keyCode === ESC_CODE) {
+    if(evt.keyCode === Code.ESC) {
       closePopup();
     }
   };
@@ -56,7 +37,7 @@
   });
 
   setupOpen.addEventListener('keydown', function(evt){
-    if(evt.keyCode === ENT_CODE) {
+    if(evt.keyCode === Code.ENTER) {
       openPopup();
     }
   });
@@ -66,7 +47,7 @@
   });
 
   setupClose.addEventListener('keydown', function(evt) {
-    if(evt.keyCode === ENT_CODE) {
+    if(evt.keyCode === Code.ENTER) {
       closePopup();
     }
   });
@@ -99,7 +80,7 @@
   let setupSubmit = document.querySelector('.setup-submit');
 
   setupSubmit.addEventListener('click', function(evt){
-    window.backend.save(function(response){
+    window.backend.upload(function(response){
       setup.classList.add('hidden');
       console.log(response);
     }, window.onError, new FormData(setupForm));
@@ -107,7 +88,7 @@
   });
 
   setupSubmit.addEventListener('keydown', function(evt){
-    if(evt.keyCode === ENT_CODE) {
+    if(evt.keyCode === Code.ENTER) {
       setupForm.submit();
     }
   });
